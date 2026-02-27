@@ -1,0 +1,102 @@
+{
+  // --------------------------------------------------
+  // ウィンドウ設定
+  // --------------------------------------------------
+  // ウィンドウタイトルをなくす
+  "window.title": " ",
+
+  // --------------------------------------------------
+  // テーマ
+  // --------------------------------------------------
+  "workbench.colorTheme": "Catppuccin Macchiato",
+  "workbench.iconTheme": "catppuccin-macchiato",
+
+  // --------------------------------------------------
+  // フォント
+  // --------------------------------------------------
+  "editor.fontFamily": "Operator Mono, monospace",
+  "editor.fontSize": 14,
+  "markdown.preview.fontFamily": "'Source Han Code JP', Consolas, 'Courier New', monospace",
+
+  // --------------------------------------------------
+  // ワークベンチ
+  // --------------------------------------------------
+  "workbench.activityBar.location": "top",
+  "workbench.tree.indent": 16,
+  "workbench.list.smoothScrolling": true,
+  "workbench.secondarySideBar.defaultVisibility": "hidden",
+
+  // --------------------------------------------------
+  // エディター
+  // --------------------------------------------------
+  "editor.renderWhitespace": "all",
+  "editor.copyWithSyntaxHighlighting": false,
+  "editor.stickyScroll.enabled": true,
+  "editor.linkedEditing": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.minimap.enabled": false,
+  "editor.fontLigatures": true,
+
+  // カーソル
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+
+  // スクロール
+  "editor.smoothScrolling": true,
+
+  // --------------------------------------------------
+  // フォーマット
+  // --------------------------------------------------
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+
+  // --------------------------------------------------
+  // ターミナル
+  // --------------------------------------------------
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.smoothScrolling": true,
+  "terminal.integrated.cursorBlinking": true,
+
+  // --------------------------------------------------
+  // デバッグ / SCM
+  // --------------------------------------------------
+  "debug.console.fontSize": 14,
+  "scm.inputFontSize": 14,
+
+  // --------------------------------------------------
+  // エクスプローラー
+  // --------------------------------------------------
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false,
+
+  // --------------------------------------------------
+  // 拡張子ごとの対応
+  // --------------------------------------------------
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "svelte.enable-ts-plugin": true
+}
