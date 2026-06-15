@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "defaultMode": "auto",
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(bun run:*)",
+      "Bash(cargo:*)",
+      "Bash(npx tauri:*)"
+    ],
+    "deny": [
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git merge:*)",
+      "Bash(git rebase:*)",
+      "Bash(git reset:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git revert:*)"
+    ]
+  },
+  "model": "opus[1m]",
+  "language": "japanese",
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true
+  },
+  "theme": "dark-daltonized",
+  "feedbackSurveyState": {
+    "lastShownTime": 1753965996993
+  }
+}
