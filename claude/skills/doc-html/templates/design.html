@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<!--
+  設計書型テンプレート — 仕様・アーキテクチャ・構成
+  本文 800px + 2階層の追従目次。図は .full で全幅に置き、直後に必ず「読み方」を添える。
+  {{ }} で囲まれた箇所を差し替え、不要な部品は削除する。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{タイトル}}</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-subtle: #f6f8fa;
+    --bg-inset: #eceff2;
+    --border: #d8dee4;
+    --border-soft: #e6eaef;
+    --text: #1f2328;
+    --text-muted: #59636e;
+    --text-faint: #838d97;
+    --accent: #0b6bcb;
+    --accent-soft: #e8f1fc;
+    --green: #1a7f37;
+    --green-soft: #e7f4ea;
+    --amber: #9a6700;
+    --amber-soft: #fdf3d4;
+    --red: #cf222e;
+    --red-soft: #ffeceb;
+    --purple: #6639ba;
+    --purple-soft: #f1eafc;
+    --sans: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, "Courier New", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.85;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+
+  /* ---------- 階層目次 ---------- */
+  .toc {
+    position: sticky; top: 0; align-self: start;
+    height: 100vh; overflow-y: auto;
+    padding: 2.5rem 1.25rem 2rem 2rem;
+    border-right: 1px solid var(--border-soft);
+  }
+  .toc-head { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .toc-sub { font-size: 0.75rem; color: var(--text-faint); margin-bottom: 1.4rem; }
+  .toc-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-faint); margin: 1.4rem 0 0.5rem;
+  }
+  .toc a {
+    display: block; padding: 0.35rem 0.7rem; margin-left: -0.7rem;
+    border-radius: 6px; font-size: 0.85rem; line-height: 1.5;
+    color: var(--text-muted); text-decoration: none;
+    border-left: 2px solid transparent;
+  }
+  .toc a.lv2 { padding-left: 1.5rem; font-size: 0.8rem; }
+  .toc a:hover { background: var(--bg-subtle); color: var(--text); }
+  .toc a.active {
+    color: var(--accent); background: var(--accent-soft);
+    border-left-color: var(--accent); font-weight: 600;
+  }
+
+  /* ---------- 本文 ---------- */
+  .doc {
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(1.5rem, 1fr)
+      [content-start] minmax(0, 800px) [content-end]
+      minmax(1.5rem, 1fr) [full-end];
+    padding: 2.5rem 0 6rem;
+  }
+  .doc > * { grid-column: content; }
+  .doc > .full { grid-column: full; }
+
+  .eyebrow {
+    display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+    color: var(--purple); background: var(--purple-soft);
+    padding: 0.25rem 0.6rem; border-radius: 4px; margin-bottom: 0.9rem;
+  }
+  h1 { font-size: 1.95rem; line-height: 1.4; letter-spacing: -0.01em; margin-bottom: 0.6rem; }
+  .meta { font-size: 0.82rem; color: var(--text-faint); display: flex; gap: 1.2rem; margin-bottom: 2.5rem; }
+
+  h2 {
+    font-size: 1.3rem; margin: 3rem 0 1rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--border-soft); scroll-margin-top: 1.5rem;
+  }
+  h3 { font-size: 1.02rem; margin: 1.9rem 0 0.6rem; scroll-margin-top: 1.5rem; }
+  p { margin-bottom: 1rem; }
+  ul, ol { margin: 0 0 1rem 1.3rem; }
+  li { margin-bottom: 0.4rem; }
+
+  code {
+    font-family: var(--mono); font-size: 0.86em;
+    background: var(--bg-inset); padding: 0.12em 0.4em; border-radius: 4px;
+  }
+  pre {
+    background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.2rem; overflow-x: auto; margin: 1.2rem 0;
+    font-size: 0.83rem; line-height: 1.7;
+  }
+  pre code { background: none; padding: 0; font-size: 1em; }
+
+  /* ---------- 図 ---------- */
+  .figure { margin: 2rem auto; max-width: 1180px; padding: 0 1.5rem; }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .figure svg text { font-family: var(--sans); }
+  .fig-num { font-size: 0.8rem; color: var(--text-faint); margin-bottom: 0.6rem; }
+  .fig-num b { color: var(--text-muted); }
+
+  /* 図の直後に必ず置く。図が何を示すかを文で補う */
+  .read-guide {
+    margin-top: 1rem;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 1rem 1.25rem;
+    font-size: 0.88rem; color: var(--text-muted); line-height: 1.8;
+  }
+  .read-guide .rg-label {
+    display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em;
+    color: var(--accent); margin-bottom: 0.35rem;
+  }
+  .read-guide b { color: var(--text); font-weight: 600; }
+
+  /* ---------- 2カラム対比 ---------- */
+  .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .vs-col { border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; }
+  .vs-col.a { border-top: 3px solid var(--accent); }
+  .vs-col.b { border-top: 3px solid var(--purple); }
+  .vs-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 0.2rem; }
+  .vs-path { font-family: var(--mono); font-size: 0.76rem; color: var(--text-faint); margin-bottom: 0.7rem; }
+  .vs-col ul { margin: 0 0 0 1.1rem; font-size: 0.87rem; color: var(--text-muted); }
+
+  /* ---------- 定義リスト ---------- */
+  .defs { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin: 1.4rem 0; }
+  .def-row { display: grid; grid-template-columns: 220px 1fr; border-bottom: 1px solid var(--border-soft); }
+  .def-row:last-child { border-bottom: none; }
+  .def-key {
+    font-family: var(--mono); font-size: 0.81rem; font-weight: 600;
+    padding: 0.8rem 1rem; background: var(--bg-subtle);
+    border-right: 1px solid var(--border-soft); word-break: break-all;
+  }
+  .def-val { padding: 0.8rem 1rem; font-size: 0.88rem; color: var(--text-muted); line-height: 1.7; }
+  .def-val strong { color: var(--text); }
+
+  /* ---------- callout ---------- */
+  .note {
+    border-left: 3px solid var(--border-soft);
+    padding: 0.2rem 0 0.2rem 1.1rem; margin: 1.4rem 0;
+    color: var(--text-muted); font-size: 0.92rem;
+  }
+  .note.warn { border-left-color: var(--amber); }
+  .note.good { border-left-color: var(--green); }
+  .note-label { display: block; font-weight: 700; font-size: 0.78rem; margin-bottom: 0.2rem; color: var(--text); }
+  .note.warn .note-label { color: var(--amber); }
+  .note.good .note-label { color: var(--green); }
+
+  @media (max-width: 1000px) {
+    .page { grid-template-columns: 1fr; }
+    .toc {
+      position: static; height: auto; border-right: none;
+      border-bottom: 1px solid var(--border-soft); padding: 1.5rem;
+    }
+    .versus { grid-template-columns: 1fr; }
+    .def-row { grid-template-columns: 1fr; }
+    .def-key { border-right: none; border-bottom: 1px solid var(--border-soft); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <aside class="toc">
+    <div class="toc-head">{{文書名}}</div>
+    <div class="toc-sub">{{副題}}</div>
+
+    <div class="toc-label">目次</div>
+    <nav id="toc-nav">
+      <!-- lv2 は h3 に対応させる -->
+      <a href="#s1">1. {{セクション1}}</a>
+      <a href="#s1-1" class="lv2">{{小見出し}}</a>
+      <a href="#s2">2. {{セクション2}}</a>
+      <a href="#s2-1" class="lv2">{{小見出し}}</a>
+      <a href="#s3">3. {{セクション3}}</a>
+    </nav>
+  </aside>
+
+  <main class="doc">
+
+    <header>
+      <span class="eyebrow">設計書</span>
+      <h1>{{タイトル}}</h1>
+      <div class="meta">
+        <span>{{YYYY-MM-DD}}</span>
+        <span>{{対象}}</span>
+      </div>
+    </header>
+
+    <p>{{この文書が何を定義するか。読者が何を得られるか}}</p>
+
+    <h2 id="s1">1. {{セクション1}}</h2>
+    <p>{{本文}}</p>
+
+    <!-- 全幅の図。SVG は viewBox で比率を決め、width/height は指定しない -->
+    <div class="full">
+      <div class="figure">
+        <div class="fig-num"><b>図1.</b> {{図の題}}</div>
+        <svg viewBox="0 0 1140 300" role="img" aria-label="{{図の説明}}">
+          <defs>
+            <marker id="arw" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+              <path d="M0,0 L9,4.5 L0,9 z" fill="#0b6bcb"/>
+            </marker>
+          </defs>
+
+          <!-- 左のブロック -->
+          <rect x="10" y="20" width="440" height="260" rx="12" fill="#f6f8fa" stroke="#d8dee4"/>
+          <text x="30" y="48" font-size="12" font-weight="700" fill="#59636e" letter-spacing="1">{{区分名}}</text>
+
+          <rect x="30" y="66" width="400" height="40" rx="8" fill="#e8f1fc"/>
+          <text x="46" y="91" font-size="12.5" fill="#1f2328" font-family="ui-monospace, Menlo, monospace">{{要素名}}</text>
+          <text x="250" y="91" font-size="11.5" fill="#59636e">{{説明}}</text>
+
+          <rect x="30" y="118" width="400" height="40" rx="8" fill="#f1eafc"/>
+          <text x="46" y="143" font-size="12.5" fill="#1f2328" font-family="ui-monospace, Menlo, monospace">{{要素名}}</text>
+          <text x="250" y="143" font-size="11.5" fill="#59636e">{{説明}}</text>
+
+          <!-- 中央の関係 -->
+          <line x1="460" y1="150" x2="670" y2="150" stroke="#0b6bcb" stroke-width="2" marker-end="url(#arw)"/>
+          <rect x="487" y="123" width="156" height="24" rx="12" fill="#ffffff" stroke="#c5dcf5"/>
+          <text x="565" y="140" font-size="12" fill="#0b6bcb" text-anchor="middle" font-weight="600">{{関係}}</text>
+
+          <!-- 右のブロック -->
+          <rect x="680" y="20" width="450" height="260" rx="12" fill="#ffffff" stroke="#d8dee4"/>
+          <text x="700" y="48" font-size="12" font-weight="700" fill="#59636e" letter-spacing="1">{{区分名}}</text>
+
+          <rect x="700" y="66" width="410" height="40" rx="8" fill="#f6f8fa" stroke="#e6eaef"/>
+          <text x="716" y="91" font-size="12.5" fill="#1f2328" font-family="ui-monospace, Menlo, monospace">{{要素名}}</text>
+          <text x="920" y="91" font-size="11.5" fill="#1a7f37">{{注記}}</text>
+        </svg>
+
+        <div class="read-guide">
+          <span class="rg-label">この図の読み方</span>
+          {{何を表す図か。矢印・色分けが何を意味するか。どこに注目すべきか}}
+        </div>
+      </div>
+    </div>
+
+    <h3 id="s1-1">{{小見出し}}</h3>
+    <p>{{本文}}</p>
+
+<pre><code>{{コマンドや設定の例}}</code></pre>
+
+    <h2 id="s2">2. {{セクション2}}</h2>
+    <p>{{本文}}</p>
+
+    <div class="note warn">
+      <span class="note-label">{{ラベル}}</span>
+      {{避けるべき構成や、判断を誤りやすい点}}
+    </div>
+
+    <h3 id="s2-1">{{小見出し}}</h3>
+
+    <!-- 2つの選択肢・配置先を並置して対比させる -->
+    <div class="versus">
+      <div class="vs-col a">
+        <div class="vs-title">{{選択肢A}}</div>
+        <div class="vs-path">{{パスや条件}}</div>
+        <ul>
+          <li>{{該当するもの}}</li>
+          <li>{{該当するもの}}</li>
+        </ul>
+      </div>
+      <div class="vs-col b">
+        <div class="vs-title">{{選択肢B}}</div>
+        <div class="vs-path">{{パスや条件}}</div>
+        <ul>
+          <li>{{該当するもの}}</li>
+          <li>{{該当するもの}}</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 id="s3">3. {{セクション3}}</h2>
+    <p>{{本文}}</p>
+
+    <!-- 要素とその責務。1要素1責務で書く -->
+    <div class="defs">
+      <div class="def-row">
+        <div class="def-key">{{要素名}}</div>
+        <div class="def-val"><strong>{{責務}}</strong>{{補足と制約}}</div>
+      </div>
+      <div class="def-row">
+        <div class="def-key">{{要素名}}</div>
+        <div class="def-val"><strong>{{責務}}</strong>{{補足と制約}}</div>
+      </div>
+    </div>
+
+    <h2 id="s4">4. 設計上の制約</h2>
+    <ul>
+      <li><strong>{{制約}}</strong> — {{理由}}</li>
+      <li><strong>{{制約}}</strong> — {{理由}}</li>
+    </ul>
+
+  </main>
+</div>
+
+<script>
+  // 目次のスクロール追従: 現在表示中の見出しをハイライトする
+  const links = Array.from(document.querySelectorAll('#toc-nav a'));
+  const targets = links
+    .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+    .filter(Boolean);
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries.filter(e => e.isIntersecting);
+    if (visible.length === 0) return;
+    visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    const id = visible[0].target.id;
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+  }, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+
+  targets.forEach(t => observer.observe(t));
+</script>
+
+</body>
+</html>

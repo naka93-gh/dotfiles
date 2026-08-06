@@ -24,7 +24,8 @@ allowed-tools: Bash(git *), Read
 履歴があれば、リポジトリのコミットスタイル（プレフィックス、言語、粒度）を読み取り、それに合わせる。
 例: `chore: ...` / `docs: ...` / `feat: ...` のような Conventional Commits 風か、自由形式か、日本語か英語か、など。
 
-履歴が無い場合（初回コミット前など）はコケずに進める。共通ルールの Conventional Commits（`type: 説明`、type は英語・説明は日本語）を既定スタイルとして採用する。
+読み込まれているルール（プロジェクトの `CLAUDE.md` と `.claude/rules/`）にコミット規約があれば、履歴より優先する。
+どちらも無い場合（初回コミット前など）はコケずに進め、Conventional Commits（`type: 説明`、type は英語・説明は日本語）を既定とする。
 
 ## メッセージの方針
 

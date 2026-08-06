@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.rs"
+---
+
 ## Rust
 - 変更後に `cargo fmt` と `cargo clippy` を実行する
 - release プロファイルは `opt-level = "s"` + `lto = true` + `codegen-units = 1` + `strip = true` を既定にする（サイズ半減・速度劣化なし。`opt-level = "z"` は速度劣化が大きく不採用）

@@ -1,8 +1,41 @@
+---
+paths:
+  - "**/*.{ts,tsx}"
+---
+
 ## TypeScript
-- `strict` を有効化。`any` を避け、型を省略しない
-- import スタイル:
-  - プロジェクト内モジュール（値）は名前空間 import: `import * as format from "./format"`
-  - ライブラリは名前付き import: `import { Component } from "@angular/core"`
-  - 型のみは `import type`: `import type { User } from "./types"`
-  - 関数は名前空間で修飾し短い名前にする（`format.fileSize`、`format.formatFileSize` としない）
-- フォーマット/Lint はプロジェクト設定（Biome / ESLint + Prettier 等）に従う
+
+- 公開する関数の引数と戻り値の型は明示する。ローカル変数は推論に任せ、リテラルに型を与えたいときだけ書く
+- `any`を避ける
+- 型のみのimportは`import type`で書く
+- フォーマット/Lintはプロジェクト設定（Biome、ESLint+Prettier等）に従う
+
+## JSDoc
+
+関数・メソッドはブロック形式で開き、`@param`/`@returns`も書く。
+
+```ts
+/**
+ * タスクを追加した新しいタスク一覧を返す
+ *
+ * @param taskList - 追加元のタスク一覧
+ * @param input - 追加するタスクの入力値
+ * @returns 新しいタスク一覧と作られたタスク
+ */
+```
+
+- 1行目に「何をするか」を書く。収まらなければ2行まで使ってよい
+- 説明と`@param`の間は1行空ける
+- 補足の「なぜ」が要るときは説明の直後に1行空けて続け、その後にもう1行空けて`@param`へ移る
+- `@param`は`名前 - 説明`の形。型は書かない（TypeScriptの型定義と二重管理にしない）
+- 戻り値が`void`/`Promise<void>`のときは`@returns`を書かない
+- 引数がないときは`@param`を書かない
+- 型のプロパティ/メンバはワンライナー（`/** ... */`を一行で）。展開しない
+
+## テスト
+
+- 対象はロジック層（services/lib/utils）。UIコンポーネントの描画テストは原則やらない
+- `describe`に関数名、`it`に`<条件>のとき<結果>`を書く
+  - 条件は「〜のとき」で統一する
+  - 否定・欠落は「<対象>なしのとき」「<対象>不統一のとき」「<項目>欠落のとき」「<対象>が見つからないとき」のように表す
+  - 結果は動詞で終える（「xxxを返す」「例外を投げる」「xxxを呼ぶ」「保存する」「許可する」）

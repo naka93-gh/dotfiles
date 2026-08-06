@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<!--
+  レポート型テンプレート — 調査・分析・技術選定
+  本文は 720px に絞り、表と図だけ .full で全幅にはみ出させる。
+  {{ }} で囲まれた箇所を差し替え、不要な部品は削除する。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{タイトル}}</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-subtle: #f6f8fa;
+    --bg-inset: #eceff2;
+    --border: #d8dee4;
+    --border-soft: #e6eaef;
+    --text: #1f2328;
+    --text-muted: #59636e;
+    --text-faint: #838d97;
+    --accent: #0b6bcb;
+    --accent-soft: #e8f1fc;
+    --green: #1a7f37;
+    --green-soft: #e7f4ea;
+    --amber: #9a6700;
+    --amber-soft: #fdf3d4;
+    --red: #cf222e;
+    --red-soft: #ffeceb;
+    --purple: #6639ba;
+    --purple-soft: #f1eafc;
+    --sans: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, "Courier New", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.85;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    display: grid;
+    grid-template-columns: 264px minmax(0, 1fr);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* ---------- 目次 ---------- */
+  .toc {
+    position: sticky; top: 0; align-self: start;
+    height: 100vh; overflow-y: auto;
+    padding: 2.5rem 1.25rem 2rem 2rem;
+    border-right: 1px solid var(--border-soft);
+  }
+  .toc-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-faint); margin-bottom: 0.9rem;
+  }
+  .toc a {
+    display: block; padding: 0.4rem 0.7rem; margin-left: -0.7rem;
+    border-radius: 6px; font-size: 0.85rem; line-height: 1.5;
+    color: var(--text-muted); text-decoration: none;
+    border-left: 2px solid transparent;
+    transition: background 0.12s, color 0.12s;
+  }
+  .toc a:hover { background: var(--bg-subtle); color: var(--text); }
+  .toc a.active {
+    color: var(--accent); background: var(--accent-soft);
+    border-left-color: var(--accent); font-weight: 600;
+  }
+
+  /* ---------- 本文: 中央 720px、図表だけ全幅 ---------- */
+  .doc {
+    display: grid;
+    grid-template-columns:
+      [full-start] minmax(1.5rem, 1fr)
+      [content-start] minmax(0, 720px) [content-end]
+      minmax(1.5rem, 1fr) [full-end];
+    padding: 2.5rem 0 6rem;
+  }
+  .doc > * { grid-column: content; }
+  .doc > .full { grid-column: full; }
+
+  /* ---------- 見出し ---------- */
+  .doc-header { margin-bottom: 2.5rem; }
+  .eyebrow {
+    display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 0.25rem 0.6rem; border-radius: 4px; margin-bottom: 0.9rem;
+  }
+  h1 { font-size: 1.95rem; line-height: 1.4; letter-spacing: -0.01em; margin-bottom: 0.6rem; }
+  .meta { font-size: 0.82rem; color: var(--text-faint); display: flex; gap: 1.2rem; flex-wrap: wrap; }
+
+  h2 {
+    font-size: 1.3rem; margin: 3rem 0 1rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--border-soft);
+    letter-spacing: -0.01em; scroll-margin-top: 1.5rem;
+  }
+  h3 { font-size: 1.02rem; margin: 1.8rem 0 0.6rem; }
+  p { margin-bottom: 1rem; }
+  p:last-child { margin-bottom: 0; }
+
+  code {
+    font-family: var(--mono); font-size: 0.86em;
+    background: var(--bg-inset); padding: 0.12em 0.4em; border-radius: 4px;
+  }
+  pre {
+    background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px;
+    padding: 1rem 1.2rem; overflow-x: auto; margin: 1.2rem 0;
+    font-size: 0.83rem; line-height: 1.7;
+  }
+  pre code { background: none; padding: 0; font-size: 1em; }
+
+  ul, ol { margin: 0 0 1rem 1.3rem; }
+  li { margin-bottom: 0.4rem; }
+  li:last-child { margin-bottom: 0; }
+
+  /* ---------- TL;DR ---------- */
+  .tldr {
+    background: linear-gradient(180deg, var(--accent-soft), #f4f9fe);
+    border: 1px solid #c5dcf5; border-radius: 12px;
+    padding: 1.5rem 1.75rem; margin-bottom: 1.5rem;
+  }
+  .tldr-title {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+    color: var(--accent); margin-bottom: 0.7rem;
+  }
+  .tldr p { font-size: 1.02rem; line-height: 1.8; }
+
+  /* ---------- callout ---------- */
+  .note {
+    border-left: 3px solid var(--border-soft);
+    padding: 0.2rem 0 0.2rem 1.1rem; margin: 1.4rem 0;
+    color: var(--text-muted); font-size: 0.92rem;
+  }
+  .note.warn { border-left-color: var(--amber); }
+  .note.good { border-left-color: var(--green); }
+  .note-label {
+    display: block; font-weight: 700; font-size: 0.78rem;
+    letter-spacing: 0.04em; margin-bottom: 0.2rem; color: var(--text);
+  }
+  .note.warn .note-label { color: var(--amber); }
+  .note.good .note-label { color: var(--green); }
+
+  /* ---------- 全幅ブロック ---------- */
+  .full-inner { max-width: 1120px; margin: 2rem auto; padding: 0 1.5rem; }
+  .block-cap { font-size: 0.8rem; color: var(--text-faint); margin-top: 0.7rem; text-align: center; }
+  .block-cap b { color: var(--text-muted); font-weight: 600; }
+
+  /* ---------- 表 ---------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead th {
+    text-align: left; padding: 0.75rem 1rem;
+    background: var(--bg-subtle); border-bottom: 1px solid var(--border);
+    font-size: 0.78rem; letter-spacing: 0.03em; color: var(--text-muted); white-space: nowrap;
+  }
+  tbody td {
+    padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-soft);
+    vertical-align: top; line-height: 1.65;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #fafbfc; }
+  td.head { font-weight: 600; white-space: nowrap; }
+
+  .mark { font-weight: 700; font-size: 0.95rem; }
+  .mark.o { color: var(--green); }
+  .mark.x { color: var(--red); }
+  .mark.t { color: var(--amber); }
+
+  /* ---------- カード ---------- */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .card { border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; background: #fff; }
+  .card-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.7rem; }
+  .card h4 { font-size: 0.98rem; }
+  .card p { font-size: 0.87rem; color: var(--text-muted); line-height: 1.75; }
+
+  .pill {
+    display: inline-block; font-size: 0.7rem; font-weight: 700;
+    padding: 0.15rem 0.5rem; border-radius: 999px;
+  }
+  .pill.a { background: var(--accent-soft); color: var(--accent); }
+  .pill.b { background: var(--bg-inset); color: var(--text-muted); }
+
+  /* ---------- 折りたたみ ---------- */
+  details {
+    border: 1px solid var(--border); border-radius: 10px;
+    margin: 1.4rem 0; background: var(--bg-subtle);
+  }
+  summary {
+    cursor: pointer; padding: 0.85rem 1.1rem; font-weight: 600; font-size: 0.92rem;
+    list-style: none; display: flex; align-items: center; gap: 0.5rem;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before {
+    content: ""; width: 0; height: 0;
+    border-left: 5px solid var(--text-faint);
+    border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+    transition: transform 0.15s;
+  }
+  details[open] summary::before { transform: rotate(90deg); }
+  .details-body { padding: 0 1.1rem 1.1rem; font-size: 0.9rem; color: var(--text-muted); }
+
+  /* ---------- SVG ---------- */
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { font-family: var(--sans); }
+
+  @media (max-width: 1000px) {
+    .page { grid-template-columns: 1fr; }
+    .toc {
+      position: static; height: auto; border-right: none;
+      border-bottom: 1px solid var(--border-soft); padding: 1.5rem;
+    }
+    .cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <aside class="toc">
+    <div class="toc-label">目次</div>
+    <nav id="toc-nav">
+      <!-- h2 の id と対応させる -->
+      <a href="#s1">{{セクション1}}</a>
+      <a href="#s2">{{セクション2}}</a>
+      <a href="#s3">{{セクション3}}</a>
+    </nav>
+  </aside>
+
+  <main class="doc">
+
+    <header class="doc-header">
+      <span class="eyebrow">{{種別（検討レポート・調査結果 等）}}</span>
+      <h1>{{タイトル}}</h1>
+      <div class="meta">
+        <span>{{YYYY-MM-DD}}</span>
+        <span>{{対象}}</span>
+      </div>
+    </header>
+
+    <!-- 結論を先に置く。以降の全セクションはこの根拠として配置する -->
+    <div class="tldr">
+      <div class="tldr-title">結論</div>
+      <p>{{結論を1〜2文で。判断とその決め手を含める}}</p>
+    </div>
+
+    <h2 id="s1">{{セクション1}}</h2>
+    <p>{{本文}}</p>
+
+    <!-- callout: warn（注意）/ good（補強）/ 無印（補足） -->
+    <div class="note warn">
+      <span class="note-label">{{ラベル}}</span>
+      {{見落としやすい点や前提}}
+    </div>
+
+    <h2 id="s2">{{セクション2}}</h2>
+    <p>{{本文}}</p>
+
+    <!-- 全幅の表。本文幅を超えて横を使う -->
+    <div class="full">
+      <div class="full-inner">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 20%">{{観点}}</th>
+                <th style="width: 9%">{{案A}}</th>
+                <th style="width: 9%">{{案B}}</th>
+                <th>補足</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="head">{{観点1}}</td>
+                <td><span class="mark o">✓</span></td>
+                <td><span class="mark x">✗</span></td>
+                <td>{{差が出る理由}}</td>
+              </tr>
+              <tr>
+                <td class="head">{{観点2}}</td>
+                <td><span class="mark t">△</span></td>
+                <td><span class="mark o">✓</span></td>
+                <td>{{差が出る理由}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="block-cap"><b>表1.</b> {{この表から読み取るべきこと}}</div>
+      </div>
+    </div>
+
+    <!-- 全幅の SVG。棒グラフはデータ点20個程度まで手書きで足りる -->
+    <div class="full">
+      <div class="full-inner">
+        <svg class="chart" viewBox="0 0 900 160" role="img" aria-label="{{図の説明}}">
+          <g font-size="13" fill="#1f2328">
+            <text x="0" y="20" font-size="11" fill="#838d97" letter-spacing="1">{{軸ラベル}}</text>
+
+            <text x="0" y="60">{{項目1}}</text>
+            <rect x="200" y="46" width="230" height="18" rx="4" fill="#e7f4ea"/>
+            <rect x="200" y="46" width="180" height="18" rx="4" fill="#1a7f37" opacity="0.55"/>
+            <text x="445" y="60" font-size="12" fill="#1a7f37">{{値・注記}}</text>
+
+            <text x="0" y="100">{{項目2}}</text>
+            <rect x="200" y="86" width="230" height="18" rx="4" fill="#ffeceb"/>
+            <rect x="200" y="86" width="60" height="18" rx="4" fill="#cf222e" opacity="0.55"/>
+            <text x="445" y="100" font-size="12" fill="#cf222e">{{値・注記}}</text>
+          </g>
+        </svg>
+        <div class="block-cap"><b>図1.</b> {{この図から読み取るべきこと}}</div>
+      </div>
+    </div>
+
+    <!-- 3分類などの並置。横に並べて比較させる -->
+    <div class="full">
+      <div class="full-inner">
+        <div class="cards">
+          <div class="card">
+            <div class="card-top">
+              <span class="pill a">{{区分}}</span>
+              <h4>{{見出し}}</h4>
+            </div>
+            <p>{{説明}}</p>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <span class="pill a">{{区分}}</span>
+              <h4>{{見出し}}</h4>
+            </div>
+            <p>{{説明}}</p>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <span class="pill b">{{区分}}</span>
+              <h4>{{見出し}}</h4>
+            </div>
+            <p>{{説明}}</p>
+          </div>
+        </div>
+        <div class="block-cap"><b>図2.</b> {{分類の意味}}</div>
+      </div>
+    </div>
+
+    <h2 id="s3">{{セクション3}}</h2>
+
+    <!-- 詳細は畳む。結論だけ読む人と深く読む人を両立させる -->
+    <details>
+      <summary>{{畳む見出し}}</summary>
+      <div class="details-body">
+        <p>{{詳細}}</p>
+      </div>
+    </details>
+
+    <div class="note">
+      <span class="note-label">次のアクション</span>
+      {{決定を受けて次に何をするか}}
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // 目次のスクロール追従: 現在表示中のセクションをハイライトする
+  const links = Array.from(document.querySelectorAll('#toc-nav a'));
+  const sections = links
+    .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+    .filter(Boolean);
+
+  const observer = new IntersectionObserver((entries) => {
+    // 画面上部に最も近い可視セクションを現在地とする
+    const visible = entries.filter(e => e.isIntersecting);
+    if (visible.length === 0) return;
+    visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+    const id = visible[0].target.id;
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+  }, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
