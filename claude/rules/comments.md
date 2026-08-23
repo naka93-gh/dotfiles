@@ -1,19 +1,11 @@
 ## コメント
 
-関数の中は「何のための処理か」を書いたコメントと、それに紐づく処理をひと塊にする。塊の間は1行空ける。
+コメントの単位は構文（if/for）ではなく処理の塊。塊の先頭にコメントを置き、その下に関係する処理を続けて書く。塊の間は1行空ける。
 
-```ts
-// 本文はfetchへ渡す前にcloneしておく。渡した後では読めなくなる
-const requestBody = readBody(request.clone());
-const startedAt = Date.now();
-const startedTick = performance.now();
-const response = original.call(window, request);
-
-void report(request, requestBody, response, startedAt, startedTick);
-return response;
-```
-
-- コメントは塊の先頭に置き、その下に関係する処理を続けて書く
+- 1行目に「何をする塊か」を書く。「なぜ」だけでは何の処理か分からないため、Whatを省かない
+- 2行目に「なぜそうするか」。なぜはコードから読み取れないときだけ足す
 - 1行ごとにコメントを付けない。説明が要る塊にだけ書く
-- 日本語で簡潔に。「なぜ」を優先し、コードを読めば分かるWhatを繰り返さない
-- 文末に句点「。」は付けない
+- 読んですぐ分かるところには書かない。Optional展開や早期returnだけの分岐に機械的に付けない
+- 日本語で簡潔に書く
+- 句点「。」は使わない。文末だけでなく文中も同じ
+- 句点で文を繋ぎたくなったら、そこは改行して行を分ける。句点が要るときは大抵2つの内容が混ざっている
